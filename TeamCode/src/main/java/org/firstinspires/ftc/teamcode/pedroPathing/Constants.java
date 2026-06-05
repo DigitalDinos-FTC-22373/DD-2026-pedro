@@ -45,7 +45,17 @@ public class Constants {
             .angularScalar(0.993)
             ;
 
-    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
+    public static PathConstraints pathConstraints = new PathConstraints(
+            0.95,
+            0.5,
+            5,
+            0.1,
+            100,
+            1.25,
+            10,
+            1
+
+    );
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)

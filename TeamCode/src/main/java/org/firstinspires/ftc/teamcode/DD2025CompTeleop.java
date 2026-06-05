@@ -31,6 +31,7 @@
 package org.firstinspires.ftc.teamcode;
 import android.util.Size;
 
+import com.bylazar.configurables.annotations.Configurable;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.hardware.sparkfun.SparkFunOTOS;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
@@ -83,11 +84,13 @@ import java.util.concurrent.TimeUnit;
  * Remove or comment out the @Disabled line to add this OpMode to the Driver Station OpMode list
  */
 
+@Configurable
 
 @TeleOp
 //@Disabled
 public class DD2025CompTeleop extends LinearOpMode {
 
+    public static double kicker_pos = 0.0;
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
     IMU imu;
     private AprilTagProcessor aprilTag;
@@ -330,9 +333,9 @@ public class DD2025CompTeleop extends LinearOpMode {
                 backintake.setPower(-1);
             }
             if (gamepad2.x || gamepad1.x) {
-                kicker.setPosition(0.35);
+                kicker.setPosition(0.5);
             } else {
-                kicker.setPosition(0);
+                kicker.setPosition(0.2);
             }
 
             if (!autoVelocity) {
