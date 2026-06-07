@@ -92,24 +92,15 @@ public class DD2025CompTeleop extends LinearOpMode {
 
     public static double kicker_pos = 0.0;
     private static final boolean USE_WEBCAM = true;  // true for webcam, false for phone camera
-    IMU imu;
+
     private AprilTagProcessor aprilTag;
     private VisionPortal visionPortal;
     // Declare OpMode members for each of the 4 motors.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor frontLeftDrive = null;
-    private DcMotor backLeftDrive = null;
-    private DcMotor frontRightDrive = null;
-    private DcMotor backRightDrive = null;
-    private DcMotor intake;
 
-    private DcMotor backintake;
-    private Servo feederleft;
-    private Servo feederright;
-    private Servo kicker;
-    private DcMotorEx shooter;
-    private SparkFunOTOS sparkFunOTOS;
-
+    BabyBopBot bbb = new BabyBopBot();
+    double shooterVelocity = 1400;
+    double shooterAdjustment = 960;
     double aprilTagAngle = 5000;
     double at_x = 5000;
     double at_y = 5000;
@@ -133,63 +124,9 @@ public class DD2025CompTeleop extends LinearOpMode {
 
         datalog = new Datalog("DD_Log_Testing");
 
-
-        imu = hardwareMap.get(IMU.class, "imu");
-
-        RevHubOrientationOnRobot.LogoFacingDirection logoDirection = RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
-        RevHubOrientationOnRobot.UsbFacingDirection  usbDirection  = RevHubOrientationOnRobot.UsbFacingDirection.UP;
-
-        RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(logoDirection, usbDirection);
-
-        imu.initialize(new IMU.Parameters(orientationOnRobot));
-
-        sparkFunOTOS = hardwareMap.get(SparkFunOTOS.class, "otos");
-        configureOTOS();
+        bbb.init(hardwareMap);
 
 
-        // Initialize the hardware variables. Note that the strings used here must correspond
-        // to the names assigned during the robot configuration step on the DS or RC devices.
-
-        frontLeftDrive = hardwareMap.get(DcMotor.class, "front left");
-        backLeftDrive = hardwareMap.get(DcMotor.class, "back left");
-        frontRightDrive = hardwareMap.get(DcMotor.class, "front right");
-        backRightDrive = hardwareMap.get(DcMotor.class, "back right");
-
-        intake = hardwareMap.get(DcMotor.class, "intake");
-        backintake = hardwareMap.get(DcMotor.class,"back intake");
-        //Vineeth made the change
-        feederleft = hardwareMap.get(Servo.class, "feeder left");
-        feederright = hardwareMap.get(Servo.class, "feeder right");
-        shooter = hardwareMap.get(DcMotorEx.class, "shooter");
-        kicker = hardwareMap.get(Servo.class, "kicker");
-        kicker.setDirection(Servo.Direction.FORWARD);
-
-        // ########################################################################################
-        // !!!            IMPORTANT Drive Information. Test your motor directions.            !!!!!
-        // ########################################################################################
-        // Most robots need the motors on one side to be reversed to drive forward.
-        // The motor reversals shown here are for a "direct drive" robot (the wheels turn the same direction as the motor shaft)
-        // If your robot has additional gear reductions or uses a right-angled drive, it's important to ensure
-        // that your motors are turning in the correct direction.  So, start out with the reversals here, BUT
-        // when you first test your robot, push the left joystick forward and observe the direction the wheels turn.
-        // Reverse the direction (flip FORWARD <-> REVERSE ) of any wheel that runs backward
-        // Keep testing until ALL the wheels move the robot forward when you push the left joystick forward.
-        frontLeftDrive.setDirection(DcMotor.Direction.REVERSE);
-        backLeftDrive.setDirection(DcMotor.Direction.FORWARD);
-        frontRightDrive.setDirection(DcMotor.Direction.FORWARD);
-        backRightDrive.setDirection(DcMotor.Direction.REVERSE);
-
-        intake.setDirection(DcMotor.Direction.FORWARD);
-        backintake.setDirection(DcMotor.Direction.FORWARD);
-        shooter.setDirection(DcMotor.Direction.REVERSE);
-        shooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-//        shooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-//        shooter.setMode(DcMotor.RunMode.);
-        double shooterVelocity = 1400;
-        double shooterAdjustment = 960;
-        // Change coefficients using methods included with DcMotorEx class.
-        PIDFCoefficients pidfNew = new PIDFCoefficients(150, 0, 0, 13.6);
-        shooter.setPIDFCoefficients(DcMotor.RunMode.RUN_USING_ENCODER, pidfNew);
 
         // Wait for the game to start (driver presses START)
         telemetry.addData("Status", "Initialized");
@@ -202,14 +139,12 @@ public class DD2025CompTeleop extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        backintake.setPower(0);
-        intake.setPower(-1);
-        shooter.setVelocity(0);
+
 
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
-            shooter.setVelocity(shooterVelocity);
+            bbb.setShooterVelocity(shooterVelocity);
             detectionAprilTag();
             if (gamepad1.startWasPressed()) {
                 autoAim = !autoAim;
@@ -225,10 +160,10 @@ public class DD2025CompTeleop extends LinearOpMode {
             }
             double max;
 
-            double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
+            double botHeading = bbb.getHeading();
 
             if (gamepad1.y) {
-                imu.resetYaw();
+                bbb.resetHeading();
             }
 
             double moveMultiplier = slowMove ? 0.4 : 1.0;
@@ -311,31 +246,31 @@ public class DD2025CompTeleop extends LinearOpMode {
             */
 
             // Send calculated power to wheels
-            frontLeftDrive.setPower(frontLeftPower);
-            frontRightDrive.setPower(frontRightPower);
-            backLeftDrive.setPower(backLeftPower);
-            backRightDrive.setPower(backRightPower);
+            bbb.setDrive(frontLeftPower,frontRightPower,backLeftPower,backRightPower);
             // front intake
             if (gamepad2.b) {
-                intake.setPower(1);
+                bbb.setFIntakeoff();
             }
             if (gamepad2.a){
-                intake.setPower(-1);
+                bbb.setFIntakeInward();
+            }
+            if (gamepad2.y){
+                bbb.setFIntakeBackward();
             }
             // back intake
             if (gamepad2.dpad_up) {
-                backintake.setPower(1);
+                bbb.setBIntakeBackward();
             }
             if (gamepad2.dpad_left || gamepad2.dpad_right) {
-                backintake.setPower(0);
+                bbb.setBIntakeoff();
             }
             if (gamepad2.dpad_down) {
-                backintake.setPower(-1);
+                bbb.setBIntakeInward();
             }
             if (gamepad2.x || gamepad1.x) {
-                kicker.setPosition(0.5);
+                bbb.kickerKick();
             } else {
-                kicker.setPosition(0.2);
+                bbb.kickerIdle();
             }
 
             if (!autoVelocity) {
@@ -352,25 +287,22 @@ public class DD2025CompTeleop extends LinearOpMode {
                     shooterVelocity = 4.21 * aprilTagDistance + shooterAdjustment;
                 }
             }
-            shooter.setVelocity(shooterVelocity);
+            bbb.setShooterVelocity(shooterVelocity);
 
-            double shooterDiff = Math.abs(shooter.getVelocity() - shooterVelocity);
+            double shooterDiff = Math.abs(bbb.getShooterVelocity() - shooterVelocity);
 
             if (gamepad1.a && shooterDiff < 101) {
                 if (!autoAim || Math.abs(goalCornerAngle) < APRILTAGANGLETOLERANCE) {
-                    feederleft.setPosition(0.15);
-                    feederright.setPosition(0.72);
+                   bbb.gateOpen();
                 } else {
-                    feederleft.setPosition(0.3);
-                    feederright.setPosition(0.53);
+                    bbb.gateClose();
                 }
             } else {
-                feederleft.setPosition(0.3);
-                feederright.setPosition(0.53);
+                bbb.gateClose();
             }
 
             // just get the OTOS position
-            SparkFunOTOS.Pose2D pos = sparkFunOTOS.getPosition();
+            SparkFunOTOS.Pose2D pos = bbb.getPosition();
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -379,8 +311,8 @@ public class DD2025CompTeleop extends LinearOpMode {
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.addData("shooter velocity",  shooterVelocity);
-            telemetry.addData("shooter get velocity",  shooter.getVelocity());
-            telemetry.addData("shooter power",  shooter.getPower());
+            telemetry.addData("shooter get velocity",  bbb.getShooterVelocity());
+            telemetry.addData("shooter power",  bbb.getShooterPower());
             telemetry.addData("April tag angle", aprilTagAngle);
 //            telemetry.addData("goal corner angle", goalCornerAngle);
 //            telemetry.addData("apriltag x", at_x);
@@ -395,7 +327,7 @@ public class DD2025CompTeleop extends LinearOpMode {
 
             // add data logger fields
             datalog.shooterSetVelocity.set(shooterVelocity / 1000);
-            datalog.shooterVelocity.set(shooter.getVelocity() / 1000);
+            datalog.shooterVelocity.set(bbb.getShooterVelocity() / 1000);
             datalog.DLYaycmd.set(yaw);
             datalog.DLGamepadA.set(gamepad1.a ? 0.2 : -0.2);
             datalog.DLApriltagangle.set(aprilTagAngle > 4000 ? 0 : aprilTagAngle / 100);
@@ -612,16 +544,7 @@ public class DD2025CompTeleop extends LinearOpMode {
         }
     }
 
-    private  void configureOTOS() {
-        sparkFunOTOS.setLinearUnit(DistanceUnit.INCH);
-        sparkFunOTOS.setAngularUnit(AngleUnit.DEGREES);
-        sparkFunOTOS.setOffset(new SparkFunOTOS.Pose2D(-0.125, -3.75, 0));
-        sparkFunOTOS.setLinearScalar(1.0);
-        sparkFunOTOS.setAngularScalar(0.993);
-        sparkFunOTOS.resetTracking();
-        sparkFunOTOS.setPosition(new SparkFunOTOS.Pose2D(0,0,0));
-        sparkFunOTOS.calibrateImu(255, false);
-    }
+
 
 }   // end class
 
