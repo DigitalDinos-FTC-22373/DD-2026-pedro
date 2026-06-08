@@ -19,12 +19,12 @@ public class Constants {
     public static FollowerConstants followerConstants = new FollowerConstants()
             .mass(10.7)
             .headingPIDFCoefficients(new PIDFCoefficients(1.25, 0, 0.075, 0.0225))
-            .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.05, 0.06858, 0.001777))
+            .predictiveBrakingCoefficients(new PredictiveBrakingCoefficients(0.04, 0.06858, 0.001777))
             .centripetalScaling(0)
             ;
 
     public static MecanumConstants driveConstants = new MecanumConstants()
-            .maxPower(1)
+            .maxPower(1.0)
             .rightFrontMotorName("front right")
             .rightRearMotorName("back right")
             .leftRearMotorName("back left")
@@ -45,17 +45,7 @@ public class Constants {
             .angularScalar(0.993)
             ;
 
-    public static PathConstraints pathConstraints = new PathConstraints(
-            0.95,
-            0.5,
-            5,
-            0.1,
-            100,
-            1.25,
-            10,
-            1
-
-    );
+    public static PathConstraints pathConstraints = new PathConstraints(0.99, 100, 1, 1);
 
     public static Follower createFollower(HardwareMap hardwareMap) {
         return new FollowerBuilder(followerConstants, hardwareMap)

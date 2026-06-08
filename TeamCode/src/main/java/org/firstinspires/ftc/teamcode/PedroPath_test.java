@@ -5,7 +5,7 @@ import com.bylazar.configurables.annotations.Configurable;
 import com.bylazar.telemetry.TelemetryManager;
 import com.bylazar.telemetry.PanelsTelemetry;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
-import com.pedropathing.geometry.BezierCurve;
+
 import com.pedropathing.geometry.BezierLine;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.paths.PathChain;
@@ -24,7 +24,11 @@ public class PedroPath_test extends OpMode {
         panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
 
         follower = Constants.createFollower(hardwareMap);
-        follower.setStartingPose(new Pose(36, 34, Math.toRadians(90)));
+        follower.setStartingPose(new Pose(23.6, 118.1, Math.toRadians(90)));
+
+        DrawingPanels.init();
+        DrawingPanels.drawRobot(follower.getPose());
+        DrawingPanels.sendPacket();
 
         paths = new Paths(follower); // Build paths
 
@@ -36,6 +40,9 @@ public class PedroPath_test extends OpMode {
     public void loop() {
         follower.update(); // Update Pedro Pathing
 //        pathState = autonomousPathUpdate(); // Update autonomous state machine
+        DrawingPanels.drawRobot(follower.getPose());
+        DrawingPanels.drawPoseHistory(follower.getPoseHistory());
+        DrawingPanels.sendPacket();
 
         // Log values to Panels and Driver Station
         panelsTelemetry.debug("Path State", pathState);
@@ -57,25 +64,22 @@ public class PedroPath_test extends OpMode {
             MainChain = follower.pathBuilder()
                     .addPath(
                             new BezierLine(
-                                    new Pose(35.856, 34.349),
-                                    new Pose(82.769, 34.696)
+                                    new Pose(23.638, 118.129),
+                                    new Pose(47.084, 117.895)
+                            )
+                    )
+                    .setLinearHeadingInterpolation(Math.toRadians(90), Math.toRadians(180))
+                    .addPath(
+                            new BezierLine(
+                                    new Pose(47.084, 117.895),
+                                    new Pose(46.935, 93.848)
                             )
                     )
                     .setTangentHeadingInterpolation()
                     .addPath(
                             new BezierLine(
-                                    new Pose(82.769, 34.696),
-                                    new Pose(82.972, 105.988)
-                            )
-                    )
-                    .setTangentHeadingInterpolation()
-                    .addPath(
-                            new BezierCurve(
-                                    new Pose(82.972, 105.988),
-                                    new Pose(58.492, 8.664),
-                                    new Pose(79.499, 116.976),
-                                    new Pose(45.604, 54.234),
-                                    new Pose(36.654, 106.189)
+                                    new Pose(46.935, 93.848),
+                                    new Pose(23.987, 94.231)
                             )
                     )
                     .setTangentHeadingInterpolation()
@@ -91,3 +95,5 @@ public class PedroPath_test extends OpMode {
         return 0;
     }
 }
+
+
