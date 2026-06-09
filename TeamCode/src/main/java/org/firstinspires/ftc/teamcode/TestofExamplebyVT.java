@@ -32,7 +32,7 @@ public class TestofExamplebyVT extends LinearOpMode {
     private final Pose endPose = new Pose(53.600, 111.208); // Final Pose of our robot, off the starting line
 
     private PathChain scorePreload, grabPickup1, scorePickup1, grabPickup2, scorePickup2, grabPickup3, scorePickup3, leave;
-    
+
     public void buildPaths() {
         scorePreload = follower.pathBuilder()
                 .addPath(new BezierLine(startPose, scorePose))
