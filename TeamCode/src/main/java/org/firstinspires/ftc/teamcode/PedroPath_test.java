@@ -18,6 +18,7 @@ public class PedroPath_test extends OpMode {
     public Follower follower; // Pedro Pathing follower instance
     private int pathState; // Current autonomous path state (state machine)
     private Paths paths; // Paths defined in the Paths class
+    private DrawingPanels drawingPanels = new DrawingPanels();
 
     @Override
     public void init() {
@@ -26,9 +27,9 @@ public class PedroPath_test extends OpMode {
         follower = Constants.createFollower(hardwareMap);
         follower.setStartingPose(new Pose(23.6, 118.1, Math.toRadians(90)));
 
-        DrawingPanels.init();
-        DrawingPanels.drawRobot(follower.getPose());
-        DrawingPanels.sendPacket();
+        drawingPanels.init();
+        drawingPanels.drawRobot(follower.getPose());
+        drawingPanels.sendPacket();
 
         paths = new Paths(follower); // Build paths
 
@@ -40,9 +41,9 @@ public class PedroPath_test extends OpMode {
     public void loop() {
         follower.update(); // Update Pedro Pathing
 //        pathState = autonomousPathUpdate(); // Update autonomous state machine
-        DrawingPanels.drawRobot(follower.getPose());
-        DrawingPanels.drawPoseHistory(follower.getPoseHistory());
-        DrawingPanels.sendPacket();
+        drawingPanels.drawRobot(follower.getPose());
+        drawingPanels.drawPoseHistory(follower.getPoseHistory());
+        drawingPanels.sendPacket();
 
         // Log values to Panels and Driver Station
         panelsTelemetry.debug("Path State", pathState);

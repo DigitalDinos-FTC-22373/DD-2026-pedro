@@ -18,20 +18,20 @@ import com.pedropathing.util.PoseHistory;
  * @version 1.1, 5/19/2025
  */
 public class DrawingPanels {
-    public static final double ROBOT_RADIUS = 9; // woah
-    private static final FieldManager panelsField = PanelsField.INSTANCE.getField();
-
-    private static final Style robotLook = new Style(
+    public double ROBOT_RADIUS = 9; // woah
+ //   private final FieldManager panelsField = PanelsField.INSTANCE.getField();
+    FieldManager panelsField = PanelsField.INSTANCE.getField();
+    private Style robotLook = new Style(
             "", "#3F51B5", 0.75
     );
-    private static final Style historyLook = new Style(
+    private Style historyLook = new Style(
             "", "#4CAF50", 0.75
     );
 
     /**
      * This prepares Panels Field for using Pedro Offsets
      */
-    public static void init() {
+    public void init() {
         panelsField.setOffsets(PanelsField.INSTANCE.getPresets().getPEDRO_PATHING());
     }
 
@@ -41,7 +41,7 @@ public class DrawingPanels {
      *
      * @param follower Pedro Follower instance.
      */
-    public static void drawDebug(Follower follower) {
+    public void drawDebug(Follower follower) {
         if (follower.getCurrentPath() != null) {
             drawPath(follower.getCurrentPath(), robotLook);
             Pose closestPoint = follower.getPointFromPath(follower.getCurrentPath().getClosestPointTValue());
@@ -60,7 +60,7 @@ public class DrawingPanels {
      * @param pose  the Pose to draw the robot at
      * @param style the parameters used to draw the robot with
      */
-    public static void drawRobot(Pose pose, Style style) {
+    public void drawRobot(Pose pose, Style style) {
         if (pose == null || Double.isNaN(pose.getX()) || Double.isNaN(pose.getY()) || Double.isNaN(pose.getHeading())) {
             return;
         }
@@ -84,7 +84,7 @@ public class DrawingPanels {
      *
      * @param pose the Pose to draw the robot at
      */
-    public static void drawRobot(Pose pose) {
+    public void drawRobot(Pose pose) {
         drawRobot(pose, robotLook);
     }
 
@@ -94,7 +94,7 @@ public class DrawingPanels {
      * @param path  the Path to draw
      * @param style the parameters used to draw the Path with
      */
-    public static void drawPath(Path path, Style style) {
+    public void drawPath(Path path, Style style) {
         double[][] points = path.getPanelsDrawingPoints();
 
         for (int i = 0; i < points[0].length; i++) {
@@ -117,7 +117,7 @@ public class DrawingPanels {
      * @param pathChain the PathChain to draw
      * @param style     the parameters used to draw the PathChain with
      */
-    public static void drawPath(PathChain pathChain, Style style) {
+    public void drawPath(PathChain pathChain, Style style) {
         for (int i = 0; i < pathChain.size(); i++) {
             drawPath(pathChain.getPath(i), style);
         }
@@ -129,7 +129,7 @@ public class DrawingPanels {
      * @param poseTracker the PoseHistory to get the pose history from
      * @param style       the parameters used to draw the pose history with
      */
-    public static void drawPoseHistory(PoseHistory poseTracker, Style style) {
+    public void drawPoseHistory(PoseHistory poseTracker, Style style) {
         panelsField.setStyle(style);
 
         int size = poseTracker.getXPositionsArray().length;
@@ -145,14 +145,14 @@ public class DrawingPanels {
      *
      * @param poseTracker the PoseHistory to get the pose history from
      */
-    public static void drawPoseHistory(PoseHistory poseTracker) {
+    public void drawPoseHistory(PoseHistory poseTracker) {
         drawPoseHistory(poseTracker, historyLook);
     }
 
     /**
      * This tries to send the current packet to FTControl Panels.
      */
-    public static void sendPacket() {
+    public void sendPacket() {
         panelsField.update();
     }
 }

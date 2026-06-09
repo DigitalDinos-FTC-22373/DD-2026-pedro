@@ -1,5 +1,7 @@
 package org.firstinspires.ftc.teamcode; // make sure this aligns with class location
 
+import com.bylazar.telemetry.PanelsTelemetry;
+import com.bylazar.telemetry.TelemetryManager;
 import com.pedropathing.follower.Follower;
 import com.pedropathing.geometry.BezierCurve;
 import com.pedropathing.geometry.BezierLine;
@@ -19,6 +21,8 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous(name = "Example Auto", group = "Examples")
 public class ExampleAuto extends LinearOpMode {
+    private TelemetryManager panelsTelemetry; // Panels Telemetry instance
+    private DrawingPanels drawingPanels = new DrawingPanels();
 
     private Follower follower;
     private final Pose startPose = new Pose(22, 122, Math.toRadians(324)); // Start Pose of our robot. This is against the goal facing AWAY
@@ -125,6 +129,14 @@ public class ExampleAuto extends LinearOpMode {
         buildPaths();
         follower.setStartingPose(startPose);
 
+        drawingPanels.init();
+        drawingPanels.drawRobot(follower.getPose());
+        drawingPanels.sendPacket();
+
+        panelsTelemetry = PanelsTelemetry.INSTANCE.getTelemetry();
+        panelsTelemetry.debug("Status", "Initialized");
+        panelsTelemetry.update(telemetry);
+
         waitForStart();
         //We schedule all our commands when we start the OpMode
         schedule(autoRoutine());
@@ -133,11 +145,16 @@ public class ExampleAuto extends LinearOpMode {
             follower.update();
             Scheduler.execute();
 
-            // Feedback to Driver Hub for debugging
-            telemetry.addData("x", follower.getPose().getX());
-            telemetry.addData("y", follower.getPose().getY());
-            telemetry.addData("heading", follower.getPose().getHeading());
-            telemetry.update();
+            drawingPanels.drawRobot(follower.getPose());
+            drawingPanels.drawPoseHistory(follower.getPoseHistory());
+            drawingPanels.sendPacket();
+
+            // Log values to Panels and Driver Station
+            panelsTelemetry.debug("X", follower.getPose().getX());
+            panelsTelemetry.debug("Y", follower.getPose().getY());
+            panelsTelemetry.debug("Heading", follower.getPose().getHeading());
+            panelsTelemetry.update(telemetry);
+
         }
     }
 }
