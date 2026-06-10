@@ -21,6 +21,7 @@ import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 @Autonomous(name = "Example Auto", group = "Examples")
 public class ExampleAuto extends LinearOpMode {
+
     private TelemetryManager panelsTelemetry; // Panels Telemetry instance
     private DrawingPanels drawingPanels = new DrawingPanels();
 

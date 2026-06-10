@@ -16,12 +16,15 @@ import static com.pedropathing.ivy.Scheduler.*;
 import static com.pedropathing.ivy.commands.Commands.waitMs;
 import static com.pedropathing.ivy.pedro.PedroCommands.*;
 import static com.pedropathing.ivy.groups.Groups.*;
+import static com.pedropathing.ivy.commands.Commands.*;
 
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
 @Autonomous(name = "Example Auto", group = "Examples")
 public class TestofExamplebyVT extends LinearOpMode {
+
+    BabyBopBot bbb = new BabyBopBot();
 
     private Follower follower;
     private final Pose startPose = new Pose(20.261, 120.342, Math.toRadians(142)); // Start Pose of our robot. This is against the goal facing AWAY
@@ -89,14 +92,29 @@ public class TestofExamplebyVT extends LinearOpMode {
                 /* Go To Score Command*/
                 follow(follower, scorePreload),
                 //need to add:put shooter power here
+                instant(() -> bbb.setShooterVelocity(1450)),
                 waitMs(1500),
+                instant(() -> bbb.setShooterVelocity(0)),
                 /* Collect 3 Artifacts Command*/
                 //need to add:set intake, front and back, and gate ready
                 follow(follower, grabPickup1, true),
+                instant(() -> {
+                    bbb.gateOpen();
+                    bbb.setFIntakeInward();
+                    bbb.setBIntakeInward();
+                }),
                 waitMs(1500),
+                instant(() ->{
+                    bbb.gateClose();
+                    bbb.setFIntakeoff();
+                    bbb.setBIntakeoff();
+                }),
+
+
+
 
                 /* Go Back To Score Command*/
-                // need to add:set shooter ready again, also turn fornt off to save power
+                // need to add:set shooter ready again, also turn front off to save power
                 follow(follower, scorePickup1, true),
                 waitMs(1500),
 
