@@ -99,7 +99,7 @@ public class DD2025CompTeleop extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     BabyBopBot bbb = new BabyBopBot();
-    double shooterVelocity = 1400;
+    double shooterVelocity = 1000;
     double shooterAdjustment = 960;
     double aprilTagAngle = 5000;
     double at_x = 5000;
@@ -155,7 +155,7 @@ public class DD2025CompTeleop extends LinearOpMode {
             if (gamepad2.rightStickButtonWasPressed()) {
                 slowTurn = !slowTurn;
             }
-            if(gamepad1.backWasPressed()){
+            if(gamepad2.backWasPressed()){
                 autoVelocity = !autoVelocity;
             }
             double max;
@@ -275,13 +275,19 @@ public class DD2025CompTeleop extends LinearOpMode {
 
             if (!autoVelocity) {
                 if (gamepad2.rightBumperWasPressed()) {
+                    shooterVelocity += 20;
+                }
+                if (gamepad2.leftBumperWasPressed()) {
+                    shooterVelocity -= 20;
+                }
+            }
+            else {
+                if (gamepad2.rightBumperWasPressed()) {
                     shooterAdjustment += 20;
                 }
                 if (gamepad2.leftBumperWasPressed()) {
                     shooterAdjustment -= 20;
                 }
-            }
-            else {
                 if (aprilTagDistance < 250) {
                     //regression determined by data collection
                     shooterVelocity = 4.21 * aprilTagDistance + shooterAdjustment;
