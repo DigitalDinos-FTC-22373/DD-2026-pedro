@@ -215,7 +215,7 @@ class ForwardTuner extends OpMode {
 
     @Override
     public void init() {
-        follower.setStartingPose(new Pose(72,72));
+        follower.setStartingPose(new Pose(0,0));
         follower.update();
         drawCurrent();
     }
@@ -240,6 +240,7 @@ class ForwardTuner extends OpMode {
         telemetryM.debug("The multiplier will display what your forward ticks to inches should be to scale your current distance to " + DISTANCE + " inches.");
         telemetryM.debug("Multiplier: " + (DISTANCE / (follower.getPose().getX() / follower.getPoseTracker().getLocalizer().getForwardMultiplier())));
         telemetryM.update(telemetry);
+        telemetryM.debug("Current Multiplier: " + follower.getPoseTracker().getLocalizer().getForwardMultiplier());
 
         drawCurrentAndHistory();
     }
@@ -263,7 +264,7 @@ class LateralTuner extends OpMode {
 
     @Override
     public void init() {
-        follower.setStartingPose(new Pose(72,72));
+        follower.setStartingPose(new Pose(0,0));
         follower.update();
         drawCurrent();
     }
