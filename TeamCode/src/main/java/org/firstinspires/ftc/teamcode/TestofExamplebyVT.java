@@ -21,7 +21,7 @@ import static com.pedropathing.ivy.commands.Commands.*;
 import org.firstinspires.ftc.teamcode.pedroPathing.Constants;
 
 
-@Autonomous(name = "Example Auto", group = "Examples")
+@Autonomous(name = "Example Auto VT", group = "Examples")
 public class TestofExamplebyVT extends LinearOpMode {
 
     BabyBopBot bbb = new BabyBopBot();
